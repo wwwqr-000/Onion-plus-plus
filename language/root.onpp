@@ -7,7 +7,7 @@
 
 //'$' is used for language-global variables or methods
 
-$headless = true;//true for console application, false for window-application.
+$.console;//$.console for console app, $.window for GUI app.
 
 string welcome = "hello, onion!";
 
@@ -16,22 +16,41 @@ pint positiveInteger = 1;//Must be a positive integer.
 nint negativeInteger = -1;//Must be a negative integer.
 float floatValue = 0.343234;
 double bigFloatValue = 32.3248273423432482734234;
+bool boolean = 0;//Boolean, 0 or 1.
 
 say(welcome + $<itos>(positiveInteger) + "\n");
 
 adder = (int a, int b) => {
-    die(a + b);
+    return a + b;
 }<void>
 
 sayHelloWorld = () => {
-    say("Hello world!");
+    say("Hello world!\n");
 }
 
-sayWelcome = (): say("Welcome!");
+sayWelcome = (): say("Welcome!\n");
 
+getName = (string& name) => {
+    $<consoleReadLine>(name);//The given input is stored in the name var trough reference.
+}
 
+User = class => {
+    public User(string name, pint age)
+}
 
 root = () => {
-
-    die(0);
+    pint first = 3;
+    pint second = 2;
+    say(c"{first} + {second} = {$<itos>(adder(first, second))}\n");
+    sayHelloWorld();
+    sayWelcome();
+    string name = "dummy";
+    say(c"You are currently called '{name}', change your name:\n> ");
+    getName(name);
+    say(c"My name is {name}, not dummy!\n");
+    
+    //Testing float value
+    say(c"Float value: {floatValue, %2}");
+    //
+    return 0;
 }<int>
