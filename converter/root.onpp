@@ -1,0 +1,4 @@
+root = () => {
+    say("Hello world!");
+    return 0;
+}<int>
