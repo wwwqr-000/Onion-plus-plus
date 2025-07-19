@@ -1,3 +1,5 @@
+include test
+
 /*
     This is a comment-block.
     Im the second line.
@@ -6,8 +8,6 @@
 //This is a inline comment.
 
 //'$' is used for language-global variables or methods
-
-$.console;//$.console for console app, $.window for GUI app.
 
 string welcome = "hello, onion!";
 
@@ -36,20 +36,36 @@ getName = (string& name) => {
     $<consoleReadLine>(name);//The given input is stored in the name var trough reference.
 }
 
-User = class => {
-    private string name;
+Human = class => {
     private pint age;
+    private pint height;
+    private string birthDate, name;
 
-    public User(string name, pint age) {
+    public Human(string name, pint age, pint height, string birthDate) {
         this.name = name;
         this.age = age;
+        this.height = height;
+        this.birthDate = birthDate;
     }
 
+    public getAge()<pint>: return this.age;
     public getName()<string>: return this.name;
+    public getHeight()<pint>: return this.height;
+    public getBirthDate()<string>: return birthDate;
+}
 
-    public isMature = () => {
-        return this.age >= 18;
-    }<bool>
+User = class : Human => {
+    private string profileName;
+    private pint ID;
+
+    public User(string profileName, pint ID)->(string name, pint age, pint height, string birthDate) {
+        this.profileName = profileName;
+        this.ID = ID;
+    }
+
+    public getID()<pint> => {
+        return this.ID;
+    }
 }
 
 root = () => {
@@ -65,6 +81,14 @@ root = () => {
     
     //Testing float value
     say(c"Float value: {floatValue, %2}");
+    //
+
+    //Class Testing
+    User me("wwwqr", 1, "dummy", 100, 200, "1999-02-05");
+
+    say(c"I ({me.getName()}) am {me.getAge()} years old.\n");
+
+    Test::showTestMessage();
     //
     return 0;
 }<int>

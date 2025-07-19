@@ -1,0 +1,7 @@
+//This is a test package
+
+Test = class => {
+    public static sayTestMessage() => {
+        say("Test message");
+    }
+}
