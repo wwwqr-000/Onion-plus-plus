@@ -30,12 +30,26 @@ sayHelloWorld = () => {
 
 sayWelcome = (): say("Welcome!\n");
 
+returnWelcome = ()<string>: return "Welcome!";
+
 getName = (string& name) => {
     $<consoleReadLine>(name);//The given input is stored in the name var trough reference.
 }
 
 User = class => {
-    public User(string name, pint age)
+    private string name;
+    private pint age;
+
+    public User(string name, pint age) {
+        this.name = name;
+        this.age = age;
+    }
+
+    public getName()<string>: return this.name;
+
+    public isMature = () => {
+        return this.age >= 18;
+    }<bool>
 }
 
 root = () => {
