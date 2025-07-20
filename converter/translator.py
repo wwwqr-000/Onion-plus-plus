@@ -1,5 +1,4 @@
 from lark import Lark, Transformer
-import re
 
 class ToCpp(Transformer):
     grammar = r"""
@@ -36,9 +35,9 @@ class ToCpp(Transformer):
         return '\n\n'.join(items)
 
     def func(self, items):
-        func_name = items[0]          # now first item is the function name
-        return_type = items[-1]       # last item is the return type
-        rest = items[1:-1]            # everything in between
+        func_name = items[0]
+        return_type = items[-1]
+        rest = items[1:-1]
 
         if rest and isinstance(rest[0], str):
             arguments = rest[0]

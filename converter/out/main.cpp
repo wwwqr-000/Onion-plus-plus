@@ -1,6 +1,4 @@
-
-        #include <iostream>
-        
+#include <iostream>
 
 void test() {
 std::cout << "Hello!";
