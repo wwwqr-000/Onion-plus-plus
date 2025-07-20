@@ -1,4 +1,5 @@
 from lark import Lark, Transformer
+import re
 
 class ToCpp(Transformer):
     grammar = r"""
@@ -79,16 +80,24 @@ class Translator():
             print(f"Error: could not open file '{onppFile}'")
             exit(1)
             
+            
         parser = Lark(ToCpp.grammar, parser='lalr', transformer=ToCpp())
         outBuff = parser.parse(mainFileCode)
         
         #Manipulating outBuff
         outBuff = outBuff.replace("string", "std::string")
-        header = """
-        #include <iostream>
-        """
+        header = ""
         
-        #if (platform == "linux"):
+        if (platform == "linux" or platform == "windows" or platform == "mac"):
+            header += "#include <iostream>"
+        
+        else:
+            print(f"Error: platform '{platform}' not supported!")
+            exit(2)
+        
+        if (platform == "linux"):None
+        if (platform == "windows"): None
+        if (platform == "mac"): None
         
         outBuff = header + "\n\n" + outBuff
         #
