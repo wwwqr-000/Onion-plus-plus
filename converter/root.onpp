@@ -1,4 +1,9 @@
-root = () => {
+test = () => {
+    say("Hello!");
+    return;
+}<void>
+
+root = (string test, int marf) => {
     say("Hello world!");
     return 0;
 }<int>
