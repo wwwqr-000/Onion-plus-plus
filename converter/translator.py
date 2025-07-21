@@ -8,15 +8,26 @@ class ToCpp(Transformer):
 
     func: func_name "=" "(" [arguments] ")" "=>" "{" stmt* "}" "<" TYPE ">"
     
+    if_statement_inline: "if" "(" if_statement_inline_args ")" ":" if_statement_inline_content ";"
+    
     func_name: ALLMETHODNAMES
+    
+    func_call: func_name "(" [call_args] ")" ";"
+    
+    call_args: call_arg ("," call_arg)*
+    call_arg: STRING | NUMBER | ALLVALUES
+    
+    if_statement_inline_args: /[^)]+/
+    if_statement_inline_content: /[^;]+/
 
     arguments: argument ("," argument)*
 
     argument: ALLVALUES ALLVALUES
 
-    ?stmt: say_stmt | return_stmt
+    ?stmt: func_call
+        | return_stmt
+        | if_statement_inline
 
-    say_stmt: "say" "(" STRING ")" ";"
     return_stmt: "return" [NUMBER] ";"
 
     TYPE: ALLVALUES
@@ -56,7 +67,14 @@ class ToCpp(Transformer):
 
     def arguments(self, items): return ', '.join(items)
     def argument(self, items): return f'{items[0]} {items[1]}'
-    def say_stmt(self, items): return f'std::cout << {items[0]};'
+    
+    def func_call(self, items):
+        funcName = items[0]
+        arguments = items[1]
+        if (arguments != None): arguments = arguments.children[0].children[0].value
+        else: arguments = ""
+        
+        return f"{funcName}({arguments});"
     
     def return_stmt(self, items):
         if (items[0] == None): items = None
@@ -66,6 +84,16 @@ class ToCpp(Transformer):
     def TYPE(self, token): return str(token)
     def ALLVALUES(self, token): return str(token)
     def func_name(self, items): return str(items[0])
+    
+    def if_statement_inline(self, items):
+        conditionTree = items[0]
+        contentTree = items[1]
+        
+        condition = conditionTree.children[0].value
+        content = contentTree.children[0].value
+        
+        if (items[0] == None): items = None
+        return f'if ({condition}) {{ {content}; }}'
     
     
 class Translator():
@@ -88,7 +116,9 @@ class Translator():
         header = ""
         
         if (platform == "linux" or platform == "windows" or platform == "mac"):
-            header += "#include <iostream>"
+            header += "#include <iostream>\n"
+            header += "#define root main\n"
+            header += "void say(std::string txt) { std::cout << txt; }\n"
         
         else:
             print(f"Error: platform '{platform}' not supported!")
