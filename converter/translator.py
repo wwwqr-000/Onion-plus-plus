@@ -10,6 +10,8 @@ class ToCpp(Transformer):
     
     if_statement_inline: "if" "(" if_statement_inline_args ")" ":" if_statement_inline_content ";"
     
+    if_statement: "if" "(" if_statement_inline_args ")" "{" stmt* "}"
+    
     func_name: ALLMETHODNAMES
     
     func_call: func_name "(" [call_args] ")" ";"
@@ -27,6 +29,7 @@ class ToCpp(Transformer):
     ?stmt: func_call
         | return_stmt
         | if_statement_inline
+        | if_statement
 
     return_stmt: "return" [NUMBER] ";"
 
@@ -84,6 +87,12 @@ class ToCpp(Transformer):
     def TYPE(self, token): return str(token)
     def ALLVALUES(self, token): return str(token)
     def func_name(self, items): return str(items[0])
+    
+    def if_statement(self, items):
+        condition = items[0].children[0]
+        stmts = items[1:]
+        body = ''.join(stmts)
+        return f'if ({condition}) {{ {body} }}'
     
     def if_statement_inline(self, items):
         conditionTree = items[0]

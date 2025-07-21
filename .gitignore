@@ -3,3 +3,4 @@ onpp/
 /converter/env
 /converter/__pycache__
 .vscode/settings.json
+converter/out/a.out

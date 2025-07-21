@@ -4,13 +4,13 @@ void say(std::string txt) { std::cout << txt; }
 
 
 void test() {
-say("Hello!");
+say("Hello! from test!\n");
 return;
 }
 
 int root() {
-if (1 == 1 || 2 == 2 && 2 >= 4) { say("test"); }
-say("Hello world!");
-test();
+if (true) { test(); }
+say("Hello world!\n");
+if (1 == 1) { say("Marfkas!\n");say("Test!@#\n"); }
 return 0;
 }

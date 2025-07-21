@@ -1,4 +1,4 @@
-import sys
+import sys, os
 
 platform = ""
 mainFile = ""
@@ -14,3 +14,8 @@ except Exception:
 from translator import Translator
 
 Translator.onppToCpp(mainFile, "out/main.cpp", platform)
+
+if (platform == "linux"):
+    os.system("cd out && g++ main.cpp")
+    
+print("Done!")
