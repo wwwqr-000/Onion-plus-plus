@@ -2,107 +2,60 @@ from lark import Lark, Transformer
 
 class ToCpp(Transformer):
     grammar = r"""
-    ALLVALUES: /[a-zA-Z_][a-zA-Z0-9_]*/
+    %import common.CNAME
+    %import common.INT
+    %import common.FLOAT
+    %import common.SIGNED_INT
+    %import common.SIGNED_FLOAT
+    %import common.SIGNED_NUMBER
+    %import common.NUMBER
+    %import common.ESCAPED_STRING
+    %import common.WS
+    %import common.NEWLINE
+    %import common.LETTER
+    %import common.DIGIT
+    %import common.WS
+    %ignore WS
+    
+    //Defining definitions
+    STRING: ESCAPED_STRING
+    TYPE: CNAME
+    argList: arg ("," arg)*
+    arg: TYPE CNAME
+    ?content: (balancedParen | /[^()]+/)*
+    balancedParen: "(" content ")"
+    //
 
     start: func+
 
-    func: func_name "=" "(" [arguments] ")" "=>" "{" stmt* "}" "<" TYPE ">"
-    
-    if_statement_inline: "if" "(" if_statement_inline_args ")" ":" if_statement_inline_content ";"
-    
-    if_statement: "if" "(" if_statement_inline_args ")" "{" stmt* "}"
-    
-    func_name: ALLMETHODNAMES
-    
-    func_call: func_name "(" [call_args] ")" ";"
-    
-    call_args: call_arg ("," call_arg)*
-    call_arg: STRING | NUMBER | ALLVALUES
-    
-    if_statement_inline_args: /[^)]+/
-    if_statement_inline_content: /[^;]+/
+    //Functions
+    func: CNAME "=" "(" [argList] ")" "=>" "{" content "}" "<" TYPE ">"
+    funcCall: CNAME "(" [argList] ")" ";"
+    //
 
-    arguments: argument ("," argument)*
-
-    argument: ALLVALUES ALLVALUES
-
-    ?stmt: func_call
-        | return_stmt
-        | if_statement_inline
-        | if_statement
-
-    return_stmt: "return" [NUMBER] ";"
-
-    TYPE: ALLVALUES
+    //Logic checkers
+    ifStatement: "if" "(" arg ")" "{" content "}"
+    //
     
-    ALLMETHODNAMES: ALLVALUES
-
-    STRING: ESCAPED_STRING
-    NUMBER: /\d+/
-
-    %import common.ESCAPED_STRING
-    %import common.WS
-    %ignore WS
+    
+    //Returners
+    returnCall: "return" [CNAME]
+    //
     """
     
     def start(self, items):
         return '\n\n'.join(items)
-
+    
     def func(self, items):
-        func_name = items[0]
-        return_type = items[-1]
-        rest = items[1:-1]
-
-        if rest and isinstance(rest[0], str):
-            arguments = rest[0]
-            stmts = rest[1:]
-        else:
-            arguments = ''
-            stmts = rest
-
-        stmts = [stmt for stmt in stmts if stmt is not None]
-        args = arguments if arguments else ''
-        body = '\n'.join(stmts)
-
-        return f'{return_type} {func_name}({args}) {{\n{body}\n}}'
-
-
-
-    def arguments(self, items): return ', '.join(items)
-    def argument(self, items): return f'{items[0]} {items[1]}'
-    
-    def func_call(self, items):
-        funcName = items[0]
-        arguments = items[1]
-        if (arguments != None): arguments = arguments.children[0].children[0].value
-        else: arguments = ""
+        name = str(items[0])
+        args = items[1] if isinstance(items[1], list) else []
+        content = items[2] if isinstance(items[2], str) else "".join(map(str, items[2]))
+        returnType = str(items[3])
         
-        return f"{funcName}({arguments});"
-    
-    def return_stmt(self, items):
-        if (items[0] == None): items = None
-        if (items): return f'return {items[0]};'
-        return f'return;'
-    
-    def TYPE(self, token): return str(token)
-    def ALLVALUES(self, token): return str(token)
-    def func_name(self, items): return str(items[0])
-    
-    def if_statement(self, items):
-        condition = items[0].children[0]
-        stmts = items[1:]
-        body = ''.join(stmts)
-        return f'if ({condition}) {{ {body} }}'
-    
-    def if_statement_inline(self, items):
-        conditionTree = items[0]
-        contentTree = items[1]
+        print(name)
         
-        condition = conditionTree.children[0].value
-        content = contentTree.children[0].value
-        
-        if (items[0] == None): items = None
-        return f'if ({condition}) {{ {content}; }}'
+        return ''
+
     
     
 class Translator():
